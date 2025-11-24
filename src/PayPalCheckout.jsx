@@ -250,7 +250,7 @@
 
 
 
-  
+
 
 //   // ---------------------- 1. GET ACCESS TOKEN ----------------------
 //   const getAccessToken = async () => {
@@ -278,7 +278,7 @@
 
 //       // FIX: Check different possible response structures
 //       let orderId;
-      
+
 //       if (response?.data?.id?.id) {
 //         orderId = response.data.id.id;
 //       } else if (response?.data?.id) {
@@ -308,7 +308,7 @@
 //   const captureOrder = async (orderID, token) => {
 //     try {
 //       console.log("Capturing order:", orderID);
-      
+
 //       const body = { orderID, accessToken: token };
 
 //       const response = await axios.post(
@@ -482,38 +482,38 @@ export default function PayPalCheckout() {
   const params = new URLSearchParams(window.location.search);
   const orderId = params.get("id");
   const accessToken = params.get("accessToken");
-//   const orderId = "8DE22138RE199460J"
-//   const accessToken ="A21AANFaIL4rRZvVQEDwU4nr3PhzF44p0ltGtKCtaXRzGObMwVRfjtEGOfvGyQVeA8BNhrlR_KkK-DrhftXman7LyREU-t1TQ"
+  //   const orderId = "8DE22138RE199460J"
+  //   const accessToken ="A21AANFaIL4rRZvVQEDwU4nr3PhzF44p0ltGtKCtaXRzGObMwVRfjtEGOfvGyQVeA8BNhrlR_KkK-DrhftXman7LyREU-t1TQ"
 
   console.log("Order ID From URL:", orderId);
   console.log("Access Token From URL:", accessToken);
   // console.log('event.validationURL',event.validationURL)
 
- if (!orderId || !accessToken) {
-  return (
-    <div className="flex flex-col items-center justify-center text-center h-screen px-6">
+  if (!orderId || !accessToken) {
+    return (
+      <div className="flex flex-col items-center justify-center text-center h-screen px-6">
 
-      <div className="text-5xl mb-3">⚠️</div>
+        <div className="text-5xl mb-3">⚠️</div>
 
-      <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-       Paypal Session Expired
-      </h2>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+          Paypal Session Expired
+        </h2>
 
-      <p className="text-sm text-gray-500">
-        The payment session is invalid or missing.
-        <br />
-        Please return to checkout and try again.
-      </p>
+        <p className="text-sm text-gray-500">
+          The payment session is invalid or missing.
+          <br />
+          Please return to checkout and try again.
+        </p>
 
-      {/* <button
+        {/* <button
         onClick={() => window.location.href = "/"}
         className="mt-5 px-5 py-2 bg-black text-white text-sm rounded-md hover:bg-gray-800 transition"
       >
         Go Back
       </button> */}
-    </div>
-  );
-}
+      </div>
+    );
+  }
 
 
   // -------------------------------------------
@@ -524,7 +524,7 @@ export default function PayPalCheckout() {
       const body = { orderId, accessToken };
 
       const response = await axios.post(
-        `${apiBase}/paypal/captureOrder`,
+      `${apiBase}/paypal/captureOrder/${orderId}`,
         body,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -541,67 +541,66 @@ export default function PayPalCheckout() {
   };
 
   return (
-  <PayPalScriptProvider options={initialOptions}>
-  <div className="max-w-md mx-auto p-6 flex flex-col items-center justify-center">
+    <PayPalScriptProvider options={initialOptions}>
+      <div className="max-w-md mx-auto p-6 flex flex-col items-center justify-center">
 
-    {/* PAYPAL BUTTON */}
-    <div className="w-full flex justify-center mb-4">
-      <PayPalButtons
-        fundingSource="paypal"
-        style={{ layout: "vertical" }}
-        createOrder={async () => {
-          console.log("Returning Existing Order From URL:", orderId);
-          return orderId;
-        }}
-        onApprove={async () => {
-          setMessage("Capturing PayPal Payment...");
-          try {
-            await captureOrder();
-            setMessage("✅ Payment Successful!");
-          } catch (e) {
-            setMessage("❌ Capture Failed: " + e.message);
-          }
-        }}
-        onError={(err) => {
-          console.error("PayPal Error:", err);
-          setMessage("❌ Error: " + err.message);
-        }}
-      />
-    </div>
+        {/* PAYPAL BUTTON */}
+        <div className="w-full flex justify-center mb-4">
+          <PayPalButtons
+            fundingSource="paypal"
+            style={{ layout: "vertical" }}
+            createOrder={async () => {
+              console.log("Returning Existing Order From URL:", orderId);
+              return orderId;
+            }}
+            onApprove={async () => {
+              setMessage("Capturing PayPal Payment...");
+              try {
+                await captureOrder();
+                setMessage("✅ Payment Successful!");
+              } catch (e) {
+                setMessage("❌ Capture Failed: " + e.message);
+              }
+            }}
+            onError={(err) => {
+              console.error("PayPal Error:", err);
+              setMessage("❌ Error: " + err.message);
+            }}
+          />
+        </div>
 
-    {/* VENMO BUTTON */}
-    <div className="w-full flex justify-center mb-4">
-      <PayPalButtons
-        fundingSource="venmo"
-        style={{ layout: "vertical" }}
-        createOrder={async () => orderId}
-        onApprove={async () => {
-          setMessage("Capturing Venmo Payment...");
-          try {
-            await captureOrder();
-            setMessage("✅ Venmo Payment Successful!");
-          } catch (e) {
-            setMessage("❌ Venmo Capture Failed");
-          }
-        }}
-      />
-    </div>
+        {/* VENMO BUTTON */}
+        <div className="w-full flex justify-center mb-4">
+          <PayPalButtons
+            fundingSource="venmo"
+            style={{ layout: "vertical" }}
+            createOrder={async () => orderId}
+            onApprove={async () => {
+              setMessage("Capturing Venmo Payment...");
+              try {
+                await captureOrder();
+                setMessage("✅ Venmo Payment Successful!");
+              } catch (e) {
+                setMessage("❌ Venmo Capture Failed");
+              }
+            }}
+          />
+        </div>
 
-    {/* STATUS MESSAGE */}
-    {message && (
-      <div
-        className={`mt-4 w-full max-w-sm text-center font-semibold p-3 rounded 
-          ${
-            message.includes("✅")
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-      >
-        {message}
+        {/* STATUS MESSAGE */}
+        {message && (
+          <div
+            className={`mt-4 w-full max-w-sm text-center font-semibold p-3 rounded 
+          ${message.includes("✅")
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+              }`}
+          >
+            {message}
+          </div>
+        )}
       </div>
-    )}
-  </div>
-</PayPalScriptProvider>
+    </PayPalScriptProvider>
 
   );
 }

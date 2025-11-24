@@ -337,6 +337,194 @@
 
 // export default ApplePayCheckout;
 
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+
+// const apiBase = "https://slotsubdomains.com/api/api/V1";
+
+// const ApplePayCheckout = ({
+//   amount = "25.00",
+//   label = "Your Business Name",
+//   currency = "USD",
+//   country = "US",
+//   onSuccess,
+//   onError,
+// }) => {
+//   const [isSupported, setIsSupported] = useState(false);
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState("");
+
+//   // ---------------------------
+//   // GET ORDER ID + TOKEN FROM URL
+//   // ---------------------------
+//   const params = new URLSearchParams(window.location.search);
+//   const orderId = params.get("id");
+//   const accessToken = params.get("accessToken");
+
+//   console.log("Order ID:", orderId);
+//   console.log("Access Token:", accessToken);
+// if (!orderId || !accessToken) {
+//   return (
+//     <div className="flex flex-col items-center justify-center text-center px-6 py-12">
+      
+//       <div className="text-5xl mb-3">⚠️</div>
+
+//       <h2 className="text-xl font-semibold text-gray-800 mb-2">
+//         Apple Pay Session Expired
+//       </h2>
+
+//       <p className="text-sm text-gray-500">
+//         Your payment session is no longer valid.
+//         <br />
+//         Please return to checkout and try again.
+//       </p>
+
+//       {/* <button
+//         onClick={() => (window.location.href = "/")}
+//         className="mt-5 px-5 py-2 bg-black text-white text-sm rounded-md hover:bg-gray-800 transition"
+//       >
+//         Go Back
+//       </button> */}
+//     </div>
+//   );
+// }
+
+
+
+//   // ---------------------------
+//   // CAPTURE ORDER
+//   // ---------------------------
+//   const captureOrder = async () => {
+//     try {
+//       const body = { orderID: orderId, accessToken };
+
+//       console.log("Capturing Order:", body);
+
+//       const response = await axios.post(`${apiBase}/paypal/captureOrder/${orderId}`);
+//       return response.data;
+//     } catch (err) {
+//       console.error("Capture Order Error:", err);
+//       setError("Failed to capture the PayPal order");
+//       throw err;
+//     }
+//   };
+
+//   // ---------------------------
+//   // CHECK APPLE PAY SUPPORT
+//   // ---------------------------
+//   useEffect(() => {
+//     if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
+//       setIsSupported(true);
+//     } else {
+//       setIsSupported(false);
+//     }
+//   }, []);
+
+//   // ---------------------------
+//   // START APPLE PAY
+//   // ---------------------------
+//   const startApplePay = async () => {
+//     if (!window.ApplePaySession) {
+//       setError("Apple Pay is not supported on this browser.");
+//       return;
+//     }
+
+//     setError("");
+//     setLoading(true);
+
+//     try {
+//       // PAYMENT REQUEST
+//       const paymentRequest = {
+//         countryCode: country,
+//         currencyCode: currency,
+//         supportedNetworks: ["visa", "masterCard", "amex", "discover"],
+//         merchantCapabilities: ["supports3DS"],
+//         total: { label, amount },
+//       };
+
+//       const session = new ApplePaySession(3, paymentRequest);
+
+//       // ---------------------------
+//       // NO MERCHANT VALIDATION
+//       // ---------------------------
+//       session.onvalidatemerchant = (event) => {
+//         console.warn("⚠ No merchant validation used.");
+//         session.completeMerchantValidation({});
+//       };
+
+//       // ---------------------------
+//       // PAYMENT AUTHORIZED
+//       // ---------------------------
+//       session.onpaymentauthorized = async () => {
+//         try {
+//           const captureResult = await captureOrder();
+
+//           if (captureResult) {
+//             session.completePayment(ApplePaySession.STATUS_SUCCESS);
+//             onSuccess?.(captureResult);
+//           } else {
+//             session.completePayment(ApplePaySession.STATUS_FAILURE);
+//             onError?.("Capture failed");
+//           }
+//         } catch (err) {
+//           session.completePayment(ApplePaySession.STATUS_FAILURE);
+//           onError?.(err);
+//         } finally {
+//           setLoading(false);
+//         }
+//       };
+
+//       // CANCELLED
+//       session.oncancel = () => {
+//         setLoading(false);
+//         setError("Payment cancelled.");
+//       };
+
+//       session.begin();
+//     } catch (err) {
+//       console.error("Apple Pay Error:", err);
+//       setError(err.message || "Apple Pay start error.");
+//       setLoading(false);
+//     }
+//   };
+
+//   // ---------------------------
+//   // UI
+//   // ---------------------------
+//   if (!isSupported) {
+//     return (
+//       <div style={{ textAlign: "center", padding: "10px", color: "#777" }}>
+//         Apple Pay is not available.
+//       </div>
+//     );
+//   }
+
+//   return (
+//    <div className="flex flex-col items-center justify-center w-full mt-6">
+//   <button
+//     onClick={startApplePay}
+//     disabled={loading}
+//     style={{
+//       WebkitAppearance: "-apple-pay-button",
+//       WebkitApplePayButtonType: "buy",
+//       WebkitApplePayButtonStyle: "black",
+//       width: "200px",
+//       height: "44px",
+//       borderRadius: "8px",
+//       cursor: loading ? "not-allowed" : "pointer",
+//       opacity: loading ? 0.5 : 1,
+//     }}
+//   ></button>
+
+//   {error && (
+//     <p className="text-red-500 text-xs mt-2">{error}</p>
+//   )}
+// </div>
+
+//   );
+// };
+
+// export default ApplePayCheckout;
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -344,7 +532,7 @@ const apiBase = "https://slotsubdomains.com/api/api/V1";
 
 const ApplePayCheckout = ({
   amount = "25.00",
-  label = "Your Business Name",
+  label = "Your Business Name (Test Mode)",
   currency = "USD",
   country = "US",
   onSuccess,
@@ -361,50 +549,31 @@ const ApplePayCheckout = ({
   const orderId = params.get("id");
   const accessToken = params.get("accessToken");
 
-  console.log("Order ID:", orderId);
-  console.log("Access Token:", accessToken);
-if (!orderId || !accessToken) {
-  return (
-    <div className="flex flex-col items-center justify-center text-center px-6 py-12">
-      
-      <div className="text-5xl mb-3">⚠️</div>
-
-      <h2 className="text-xl font-semibold text-gray-800 mb-2">
-        Apple Pay Session Expired
-      </h2>
-
-      <p className="text-sm text-gray-500">
-        Your payment session is no longer valid.
-        <br />
-        Please return to checkout and try again.
-      </p>
-
-      {/* <button
-        onClick={() => (window.location.href = "/")}
-        className="mt-5 px-5 py-2 bg-black text-white text-sm rounded-md hover:bg-gray-800 transition"
-      >
-        Go Back
-      </button> */}
-    </div>
-  );
-}
-
-
+  if (!orderId || !accessToken) {
+    return (
+      <div className="flex flex-col items-center justify-center text-center px-6 py-12">
+        <div className="text-5xl mb-3">⚠️</div>
+        <h2 className="text-xl font-semibold text-gray-800 mb-2">
+          Apple Pay Session Expired
+        </h2>
+        <p className="text-sm text-gray-500">
+          Your payment session is no longer valid. <br /> Please try again.
+        </p>
+      </div>
+    );
+  }
 
   // ---------------------------
   // CAPTURE ORDER
   // ---------------------------
   const captureOrder = async () => {
     try {
-      const body = { orderID: orderId, accessToken };
-
-      console.log("Capturing Order:", body);
-
-      const response = await axios.post(`${apiBase}/paypal/captureOrder`, body);
+      const response = await axios.post(
+        `${apiBase}/paypal/captureOrder/${orderId}`
+      );
       return response.data;
     } catch (err) {
-      console.error("Capture Order Error:", err);
-      setError("Failed to capture the PayPal order");
+      setError("Failed to capture PayPal order");
       throw err;
     }
   };
@@ -421,7 +590,7 @@ if (!orderId || !accessToken) {
   }, []);
 
   // ---------------------------
-  // START APPLE PAY
+  // START APPLE PAY (TEST MODE)
   // ---------------------------
   const startApplePay = async () => {
     if (!window.ApplePaySession) {
@@ -433,22 +602,42 @@ if (!orderId || !accessToken) {
     setLoading(true);
 
     try {
-      // PAYMENT REQUEST
+      // TEST MODE PAYMENT REQUEST
       const paymentRequest = {
         countryCode: country,
         currencyCode: currency,
+
+        // PayPal Apple Pay allowed networks
         supportedNetworks: ["visa", "masterCard", "amex", "discover"],
+
         merchantCapabilities: ["supports3DS"],
-        total: { label, amount },
+
+        // ⭐ Apple Pay Test Merchant Identifier ⭐
+      merchantIdentifier: "T8ER994YW7HA2",       // Required for PayPal Apple Pay
+  merchantName: label || "Ga Skill Games",     // Your business name in Apple Pay popup
+
+        total: {
+          label: label + " (Test Mode)",
+          amount: amount,
+          type: "final",
+        },
+
+        lineItems: [
+          {
+            label: "Test Payment",
+            amount: amount,
+            type: "final",
+          },
+        ],
       };
 
       const session = new ApplePaySession(3, paymentRequest);
 
       // ---------------------------
-      // NO MERCHANT VALIDATION
+      // TEST MODE: SKIP VALIDATION
       // ---------------------------
       session.onvalidatemerchant = (event) => {
-        console.warn("⚠ No merchant validation used.");
+        console.warn("Apple Pay (TEST MODE): Merchant validation skipped.");
         session.completeMerchantValidation({});
       };
 
@@ -457,15 +646,10 @@ if (!orderId || !accessToken) {
       // ---------------------------
       session.onpaymentauthorized = async () => {
         try {
-          const captureResult = await captureOrder();
+          const result = await captureOrder();
 
-          if (captureResult) {
-            session.completePayment(ApplePaySession.STATUS_SUCCESS);
-            onSuccess?.(captureResult);
-          } else {
-            session.completePayment(ApplePaySession.STATUS_FAILURE);
-            onError?.("Capture failed");
-          }
+          session.completePayment(ApplePaySession.STATUS_SUCCESS);
+          onSuccess?.(result);
         } catch (err) {
           session.completePayment(ApplePaySession.STATUS_FAILURE);
           onError?.(err);
@@ -474,16 +658,14 @@ if (!orderId || !accessToken) {
         }
       };
 
-      // CANCELLED
       session.oncancel = () => {
         setLoading(false);
-        setError("Payment cancelled.");
+        setError("Payment cancelled by user.");
       };
 
       session.begin();
-    } catch (err) {
-      console.error("Apple Pay Error:", err);
-      setError(err.message || "Apple Pay start error.");
+    } catch (error) {
+      setError(error.message || "Apple Pay test error.");
       setLoading(false);
     }
   };
@@ -500,27 +682,24 @@ if (!orderId || !accessToken) {
   }
 
   return (
-   <div className="flex flex-col items-center justify-center w-full mt-6">
-  <button
-    onClick={startApplePay}
-    disabled={loading}
-    style={{
-      WebkitAppearance: "-apple-pay-button",
-      WebkitApplePayButtonType: "buy",
-      WebkitApplePayButtonStyle: "black",
-      width: "200px",
-      height: "44px",
-      borderRadius: "8px",
-      cursor: loading ? "not-allowed" : "pointer",
-      opacity: loading ? 0.5 : 1,
-    }}
-  ></button>
+    <div className="flex flex-col items-center justify-center w-full mt-6">
+      <button
+        onClick={startApplePay}
+        disabled={loading}
+        style={{
+          WebkitAppearance: "-apple-pay-button",
+          WebkitApplePayButtonType: "buy",
+          WebkitApplePayButtonStyle: "black",
+          width: "200px",
+          height: "44px",
+          borderRadius: "8px",
+          cursor: loading ? "not-allowed" : "pointer",
+          opacity: loading ? 0.5 : 1,
+        }}
+      ></button>
 
-  {error && (
-    <p className="text-red-500 text-xs mt-2">{error}</p>
-  )}
-</div>
-
+      {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
+    </div>
   );
 };
 
