@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PayPalCheckout from "./PayPalCheckout";
 import ApplePayCheckout from "./ApplePay/ApplePayCheckout";
 import GooglePayButto from "./GooglePayButto";
+import PayPalOnly from "./PayPalOnly";
 
 function App() {
   return (
@@ -13,6 +14,8 @@ function App() {
       <Routes>
         {/* Home Page */}
         <Route path="/" element={<PayPalCheckout />} />
+                <Route path="/paypal" element={<PayPalOnly />} />
+
         <Route path="/google-pay" element={<GooglePayButto />} />
 
         {/* Apple Pay Checkout Route */}

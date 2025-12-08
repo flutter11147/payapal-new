@@ -470,10 +470,11 @@ const initialOptions = {
   currency: "USD",
   intent: "capture",
   components: "buttons,funding-eligibility",
-  "enable-funding": "venmo,card",
+//   "enable-funding": "venmo,card",
+  "enable-funding": "card",
 };
 
-export default function PayPalCheckout() {
+export default function PayPalOnly() {
   const [message, setMessage] = useState("");
 
   // -------------------------------------------
@@ -518,7 +519,6 @@ export default function PayPalCheckout() {
 
   // -------------------------------------------
   // CAPTURE ORDER (Backend API)
-  // -------------------------------------------
 const captureOrder = async () => {
   try {
     const body = { orderId, accessToken };
@@ -546,66 +546,46 @@ const captureOrder = async () => {
 
 
   return (
-    <PayPalScriptProvider options={initialOptions}>
-      <div className="max-w-md mx-auto p-6 flex flex-col items-center justify-center">
+<PayPalScriptProvider options={initialOptions}>
+  <div className="max-w-md mx-auto p-6 flex flex-col items-center justify-center">
 
-        {/* PAYPAL BUTTON */}
-        <div className="w-full flex justify-center mb-4">
-          <PayPalButtons
-            fundingSource="paypal"
-            style={{ layout: "vertical" }}
-            createOrder={async () => {
-              console.log("Returning Existing Order From URL:", orderId);
-              return orderId;
-            }}
-            onApprove={async () => {
-              setMessage("Capturing PayPal Payment...");
-              try {
-                await captureOrder();
-                setMessage("✅ Payment Successful!");
-              } catch (e) {
-                setMessage("❌ Capture Failed: " + e.message);
-              }
-            }}
-            onError={(err) => {
-              console.error("PayPal Error:", err);
-              setMessage("❌ Error: " + err.message);
-            }}
-          />
-        </div>
+    {/* PAYPAL BUTTON ONLY */}
+    <div className="w-full flex justify-center mb-4">
+      <PayPalButtons
+        fundingSource="paypal"
+        style={{ layout: "vertical" }}
+        createOrder={async () => {
+          console.log("Returning Existing Order From URL:", orderId);
+          return orderId;
+        }}
+        onApprove={async () => {
+          setMessage("Capturing PayPal Payment...");
+          try {
+            await captureOrder();
+            setMessage("✅ Payment Successful!");
+          } catch (e) {
+            setMessage("❌ Capture Failed: " + e.message);
+          }
+        }}
+        onError={(err) => {
+          console.error("PayPal Error:", err);
+          setMessage("❌ Error: " + err.message);
+        }}
+      />
+    </div>
 
-        {/* VENMO BUTTON */}
-        <div className="w-full flex justify-center mb-4">
-          <PayPalButtons
-            fundingSource="venmo"
-            style={{ layout: "vertical" }}
-            createOrder={async () => orderId}
-            onApprove={async () => {
-              setMessage("Capturing Venmo Payment...");
-              try {
-                await captureOrder();
-                setMessage("✅ Venmo Payment Successful!");
-              } catch (e) {
-                setMessage("❌ Venmo Capture Failed");
-              }
-            }}
-          />
-        </div>
-
-        {/* STATUS MESSAGE */}
-        {message && (
-          <div
-            className={`mt-4 w-full max-w-sm text-center font-semibold p-3 rounded 
-          ${message.includes("✅")
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-              }`}
-          >
-            {message}
-          </div>
-        )}
+    {message && (
+      <div
+        className={`mt-4 w-full max-w-sm text-center font-semibold p-3 rounded
+        ${message.includes("✅") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}
+        `}
+      >
+        {message}
       </div>
-    </PayPalScriptProvider>
+    )}
+  </div>
+</PayPalScriptProvider>
+
 
   );
 }
