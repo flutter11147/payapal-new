@@ -1,0 +1,4 @@
+[[headers]]
+for = "/.well-known/apple-developer-merchantid-domain-association"
+  [headers.values]
+  Content-Type = "application/octet-stream"
