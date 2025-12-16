@@ -474,7 +474,7 @@ const ApplePayCheckout = ({
         currencyCode: currency,
         supportedNetworks: ["visa", "masterCard", "amex"],
         merchantCapabilities: ["supports3DS"],
-        merchantIdentifier: "merchant.com.applepaydemo", // CHANGE TO YOUR REAL MERCHANT ID
+        merchantIdentifier: "merchant.com.prizeskillz.pay", // CHANGE TO YOUR REAL MERCHANT ID
         total: {
           label: label,
           amount: amount,
@@ -487,34 +487,34 @@ const ApplePayCheckout = ({
       // --------------------------------------------
       // REAL MERCHANT VALIDATION IMPLEMENTATION
       // --------------------------------------------
- session.onvalidatemerchant = async (event) => {
-  console.log("===============================");
-  console.log("🔵 Apple Pay Merchant Validation Triggered");
-  console.log("📌 Raw event object:", event);
-  console.log("🔗 event.validationURL:", event.validationURL);
-  console.log("===============================");
+      session.onvalidatemerchant = async (event) => {
+        console.log("===============================");
+        console.log("🔵 Apple Pay Merchant Validation Triggered");
+        console.log("📌 Raw event object:", event);
+        console.log("🔗 event.validationURL:", event.validationURL);
+        console.log("===============================");
 
-  try {
-    const response = await axios.post(
-      `${apiBase}/paypal/validateMerchantUrl`,
-      {
-        validationURL: event.validationURL
-      }
-    );
+        try {
+          const response = await axios.post(
+            `${apiBase}/paypal/validateMerchantUrl`,
+            {
+              validationURL: event.validationURL
+            }
+          );
 
-    console.log("===============================");
-    console.log("✅ Merchant Validation Response:");
-    console.log(response.data);
-    console.log("===============================");
+          console.log("===============================");
+          console.log("✅ Merchant Validation Response:");
+          console.log(response.data);
+          console.log("===============================");
 
-    session.completeMerchantValidation(response.data);
-  } catch (err) {
-    console.error("❌ Merchant validation failed:", err);
-    session.abort();
-    setError("Merchant validation failed.");
-    setLoading(false);
-  }
-};
+          session.completeMerchantValidation(response.data);
+        } catch (err) {
+          console.error("❌ Merchant validation failed:", err);
+          session.abort();
+          setError("Merchant validation failed.");
+          setLoading(false);
+        }
+      };
 
 
       // --------------------------------------------
