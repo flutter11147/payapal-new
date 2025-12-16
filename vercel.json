@@ -1,9 +1,19 @@
 {
   "rewrites": [
-   
     {
-      "source": "/:path*",
+      "source": "/((?!\\.well-known/).*)",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/.well-known/apple-developer-merchantid-domain-association",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain"
+        }
+      ]
     }
   ]
 }
