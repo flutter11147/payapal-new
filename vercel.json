@@ -1,7 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/((?!\\.well-known/).*)",
+      "source": "/.well-known/:path*",
+      "destination": "/.well-known/:path*"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
@@ -9,27 +13,15 @@
     {
       "source": "/.well-known/apple-developer-merchantid-domain-association",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/plain"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
+        { "key": "Content-Type", "value": "text/plain" },
+        { "key": "Cache-Control", "value": "no-store" }
       ]
     },
     {
       "source": "/.well-known/apple-developer-merchantid-domain-association.txt",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/plain"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
+        { "key": "Content-Type", "value": "text/plain" },
+        { "key": "Cache-Control", "value": "no-store" }
       ]
     }
   ]
