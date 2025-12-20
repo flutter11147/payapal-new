@@ -401,7 +401,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const apiBase = "https://flyweistechnologies.in/api/api/V1";
+const apiBase = "https://slotsubdomains.com/api/api/V1";
 
 const ApplePayCheckout = ({
   amount = "25.00",
