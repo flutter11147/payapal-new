@@ -520,21 +520,37 @@ const ApplePayCheckout = ({
       // --------------------------------------------
       // PAYMENT AUTHORIZED
       // --------------------------------------------
-      session.onpaymentauthorized = async (paymentEvent) => {
-        console.log("💳 Payment Authorized:", paymentEvent);
+  session.onpaymentauthorized = async (event) => {
+  console.log("💳 Apple Pay Authorized:", event.payment);
 
-        try {
-          const result = await captureOrder();
-          session.completePayment(ApplePaySession.STATUS_SUCCESS);
-          onSuccess?.(result);
-        } catch (err) {
-          console.error("❌ Payment Failed:", err);
-          session.completePayment(ApplePaySession.STATUS_FAILURE);
-          onError?.(err);
-        } finally {
-          setLoading(false);
-        }
-      };
+  try {
+    const res = await axios.post(
+      `${apiBase}/paypal/captureOrder/${orderId}`
+
+      // {
+      //   orderId,
+      //   applePayToken: event.payment.token.paymentData,
+      //   billingContact: event.payment.billingContact,
+      //   shippingContact: event.payment.shippingContact,
+      // },
+      // {
+      //   headers: {
+      //     Authorization: `Bearer ${accessToken}`,
+      //   },
+      // }
+    );
+
+    session.completePayment(ApplePaySession.STATUS_SUCCESS);
+    onSuccess?.(res.data);
+  } catch (err) {
+    console.error("❌ Apple Pay Capture Failed:", err);
+    session.completePayment(ApplePaySession.STATUS_FAILURE);
+    onError?.(err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
       session.oncancel = () => {
         console.warn("⚠️ Apple Pay Cancelled by User");
