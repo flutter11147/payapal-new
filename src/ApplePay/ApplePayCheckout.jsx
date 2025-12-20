@@ -681,7 +681,7 @@ const ApplePayCheckout = ({
       session.onpaymentauthorized = async (event) => {
         try {
           const res = await axios.post(
-            `${apiBase}/paypal/captureOrder/${orderId}`
+            `${apiBase}/paypal/captureOrder/${orderId}`,
             {
               orderId,
               applePayToken: event.payment.token.paymentData,
