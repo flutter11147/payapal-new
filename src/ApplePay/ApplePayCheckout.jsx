@@ -706,10 +706,9 @@ const ApplePayCheckout = ({
         }
       };
 
-      session.oncancel = () => {
-        setError("Payment cancelled.");
-        setLoading(false);
-      };
+   session.oncancel = (event) => {
+  console.log(event); // usually empty
+};
 
       session.begin();
     } catch (err) {
