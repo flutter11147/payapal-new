@@ -504,7 +504,7 @@ const ApplePayCheckout = ({
 
           console.log("===============================");
           console.log("✅ Merchant Validation Response:");
-          console.log(response.data);
+          console.log("507------------- response:",response.data);
           console.log("===============================");
 
           session.completeMerchantValidation(response.data);
