@@ -398,6 +398,206 @@
 
 
 
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+
+// const apiBase = "https://slotsubdomains.com/api/api/V1";
+
+// const ApplePayCheckout = ({
+//   amount = "25.00",
+//   label = "Your Business Name (Test Mode)",
+//   currency = "USD",
+//   country = "US",
+//   onSuccess,
+//   onError,
+// }) => {
+//   const [isSupported, setIsSupported] = useState(false);
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState("");
+
+//   console.log("🔍 ApplePayCheckout component loaded");
+//   console.log("Query Params:", window.location.search);
+
+//   const params = new URLSearchParams(window.location.search);
+//   const orderId = params.get("id");
+//   const accessToken = params.get("accessToken");
+
+//   if (!orderId || !accessToken) {
+//     return (
+//       <div className="flex flex-col items-center justify-center text-center px-6 py-12">
+//         <div className="text-5xl mb-3">⚠️</div>
+//         <h2 className="text-xl font-semibold text-gray-800 mb-2">
+//           Apple Pay Session Expired
+//         </h2>
+//         <p className="text-sm text-gray-500">
+//           Your payment session is no longer valid. <br /> Please try again.
+//         </p>
+//       </div>
+//     );
+//   }
+
+//   const captureOrder = async () => {
+//     console.log("📦 Capturing PayPal order:", orderId);
+
+//     const res = await axios.post(
+//       `${apiBase}/paypal/captureOrder/${orderId}`
+//     );
+
+//     return res.data;
+//   };
+
+//   useEffect(() => {
+//     if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
+//       setIsSupported(true);
+//     } else {
+//       setIsSupported(false);
+//     }
+//   }, []);
+
+//   // ---------------------------
+//   // START APPLE PAY
+//   // ---------------------------
+//   const startApplePay = async () => {
+//     console.log("▶️ Apple Pay button clicked");
+
+//     if (!window.ApplePaySession) {
+//       setError("Apple Pay is not supported on this device.");
+//       return;
+//     }
+
+//     setError("");
+//     setLoading(true);
+
+//     try {
+//       const paymentRequest = {
+//         countryCode: country,
+//         currencyCode: currency,
+//         supportedNetworks: ["visa", "masterCard", "amex"],
+//         merchantCapabilities: ["supports3DS"],
+//         merchantIdentifier: "merchant.com.prizeskillz.pay", // CHANGE TO YOUR REAL MERCHANT ID
+//         total: {
+//           label: label,
+//           amount: amount,
+//           type: "final",
+//         },
+//       };
+
+//       const session = new ApplePaySession(3, paymentRequest);
+
+//       // --------------------------------------------
+//       // REAL MERCHANT VALIDATION IMPLEMENTATION
+//       // --------------------------------------------
+//       session.onvalidatemerchant = async (event) => {
+//         console.log("===============================");
+//         console.log("🔵 Apple Pay Merchant Validation Triggered");
+//         console.log("📌 Raw event object:", event);
+//         console.log("🔗 event.validationURL:", event.validationURL);
+//         console.log("===============================");
+
+//         try {
+//           const response = await axios.post(
+//             `${apiBase}/paypal/validateMerchantUrl`,
+//             {
+//               validationURL: event.validationURL
+//             }
+//           );
+
+//           console.log("===============================");
+//           console.log("✅ Merchant Validation Response:");
+//           console.log("507------------- response:",response.data);
+//           console.log("===============================");
+
+//           session.completeMerchantValidation(response.data);
+//         } catch (err) {
+//           console.error("❌ Merchant validation failed:", err);
+//           session.abort();
+//           setError("Merchant validation failed.");
+//           setLoading(false);
+//         }
+//       };
+
+
+//       // --------------------------------------------
+//       // PAYMENT AUTHORIZED
+//       // --------------------------------------------
+//   session.onpaymentauthorized = async (event) => {
+//   console.log("💳 Apple Pay Authorized:", event.payment);
+
+//   try {
+//     const res = await axios.post(
+//       `${apiBase}/paypal/captureOrder/${orderId}`
+
+//       // {
+//       //   orderId,
+//       //   applePayToken: event.payment.token.paymentData,
+//       //   billingContact: event.payment.billingContact,
+//       //   shippingContact: event.payment.shippingContact,
+//       // },
+//       // {
+//       //   headers: {
+//       //     Authorization: `Bearer ${accessToken}`,
+//       //   },
+//       // }
+//     );
+
+//     session.completePayment(ApplePaySession.STATUS_SUCCESS);
+//     onSuccess?.(res.data);
+//   } catch (err) {
+//     console.error("❌ Apple Pay Capture Failed:", err);
+//     session.completePayment(ApplePaySession.STATUS_FAILURE);
+//     onError?.(err);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+
+//       session.oncancel = () => {
+//         console.warn("⚠️ Apple Pay Cancelled by User");
+//         setError("Payment cancelled.");
+//         setLoading(false);
+//       };
+
+//       session.begin();
+//     } catch (err) {
+//       console.error("❌ Apple Pay Error:", err);
+//       setError("Apple Pay failed to start.");
+//       setLoading(false);
+//     }
+//   };
+
+//   if (!isSupported) {
+//     return (
+//       <div style={{ textAlign: "center", padding: "10px", color: "#777" }}>
+//         Apple Pay is not available.
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="flex flex-col items-center justify-center w-full mt-6">
+//       <button
+//         onClick={startApplePay}
+//         disabled={loading}
+//         style={{
+//           WebkitAppearance: "-apple-pay-button",
+//           WebkitApplePayButtonType: "buy",
+//           WebkitApplePayButtonStyle: "black",
+//           width: "200px",
+//           height: "44px",
+//           borderRadius: "8px",
+//         }}
+//       ></button>
+
+//       {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
+//     </div>
+//   );
+// };
+
+// export default ApplePayCheckout;
+
+
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -405,7 +605,7 @@ const apiBase = "https://slotsubdomains.com/api/api/V1";
 
 const ApplePayCheckout = ({
   amount = "25.00",
-  label = "Your Business Name (Test Mode)",
+  label = "Prizeskillz",
   currency = "USD",
   country = "US",
   onSuccess,
@@ -415,58 +615,35 @@ const ApplePayCheckout = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  console.log("🔍 ApplePayCheckout component loaded");
-  console.log("Query Params:", window.location.search);
-
   const params = new URLSearchParams(window.location.search);
   const orderId = params.get("id");
   const accessToken = params.get("accessToken");
 
+  // ❌ Invalid session
   if (!orderId || !accessToken) {
     return (
       <div className="flex flex-col items-center justify-center text-center px-6 py-12">
-        <div className="text-5xl mb-3">⚠️</div>
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">
-          Apple Pay Session Expired
-        </h2>
-        <p className="text-sm text-gray-500">
-          Your payment session is no longer valid. <br /> Please try again.
-        </p>
+        <h2 className="text-xl font-semibold">Apple Pay Session Expired</h2>
+        <p className="text-sm text-gray-500">Please try again.</p>
       </div>
     );
   }
 
-  const captureOrder = async () => {
-    console.log("📦 Capturing PayPal order:", orderId);
-
-    const res = await axios.post(
-      `${apiBase}/paypal/captureOrder/${orderId}`
-    );
-
-    return res.data;
-  };
-
+  // Check Apple Pay support
   useEffect(() => {
     if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
       setIsSupported(true);
-    } else {
-      setIsSupported(false);
     }
   }, []);
 
-  // ---------------------------
-  // START APPLE PAY
-  // ---------------------------
   const startApplePay = async () => {
-    console.log("▶️ Apple Pay button clicked");
-
     if (!window.ApplePaySession) {
-      setError("Apple Pay is not supported on this device.");
+      setError("Apple Pay not supported.");
       return;
     }
 
-    setError("");
     setLoading(true);
+    setError("");
 
     try {
       const paymentRequest = {
@@ -474,108 +651,80 @@ const ApplePayCheckout = ({
         currencyCode: currency,
         supportedNetworks: ["visa", "masterCard", "amex"],
         merchantCapabilities: ["supports3DS"],
-        merchantIdentifier: "merchant.com.prizeskillz.pay", // CHANGE TO YOUR REAL MERCHANT ID
         total: {
-          label: label,
-          amount: amount,
+          label,
+          amount: amount.toString(), // MUST be string
           type: "final",
         },
       };
 
       const session = new ApplePaySession(3, paymentRequest);
 
-      // --------------------------------------------
-      // REAL MERCHANT VALIDATION IMPLEMENTATION
-      // --------------------------------------------
+      // 🔹 Merchant validation
       session.onvalidatemerchant = async (event) => {
-        console.log("===============================");
-        console.log("🔵 Apple Pay Merchant Validation Triggered");
-        console.log("📌 Raw event object:", event);
-        console.log("🔗 event.validationURL:", event.validationURL);
-        console.log("===============================");
-
         try {
-          const response = await axios.post(
+          const res = await axios.post(
             `${apiBase}/paypal/validateMerchantUrl`,
-            {
-              validationURL: event.validationURL
-            }
+            { validationURL: event.validationURL }
           );
 
-          console.log("===============================");
-          console.log("✅ Merchant Validation Response:");
-          console.log("507------------- response:",response.data);
-          console.log("===============================");
-
-          session.completeMerchantValidation(response.data);
+          session.completeMerchantValidation(res.data);
         } catch (err) {
-          console.error("❌ Merchant validation failed:", err);
+          console.error("Merchant validation failed", err);
           session.abort();
-          setError("Merchant validation failed.");
+          setError("Merchant validation failed");
           setLoading(false);
         }
       };
 
+      // 🔹 Apple Pay AUTHORIZED (IMPORTANT FIX)
+      session.onpaymentauthorized = async (event) => {
+        try {
+          const res = await axios.post(
+            `${apiBase}/paypal/captureOrder/${orderId}`
+            {
+              orderId,
+              applePayToken: event.payment.token.paymentData,
+              billingContact: event.payment.billingContact,
+              shippingContact: event.payment.shippingContact,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
 
-      // --------------------------------------------
-      // PAYMENT AUTHORIZED
-      // --------------------------------------------
-  session.onpaymentauthorized = async (event) => {
-  console.log("💳 Apple Pay Authorized:", event.payment);
-
-  try {
-    const res = await axios.post(
-      `${apiBase}/paypal/captureOrder/${orderId}`
-
-      // {
-      //   orderId,
-      //   applePayToken: event.payment.token.paymentData,
-      //   billingContact: event.payment.billingContact,
-      //   shippingContact: event.payment.shippingContact,
-      // },
-      // {
-      //   headers: {
-      //     Authorization: `Bearer ${accessToken}`,
-      //   },
-      // }
-    );
-
-    session.completePayment(ApplePaySession.STATUS_SUCCESS);
-    onSuccess?.(res.data);
-  } catch (err) {
-    console.error("❌ Apple Pay Capture Failed:", err);
-    session.completePayment(ApplePaySession.STATUS_FAILURE);
-    onError?.(err);
-  } finally {
-    setLoading(false);
-  }
-};
-
+          session.completePayment(ApplePaySession.STATUS_SUCCESS);
+          onSuccess?.(res.data);
+        } catch (err) {
+          console.error("Apple Pay capture failed", err);
+          session.completePayment(ApplePaySession.STATUS_FAILURE);
+          onError?.(err);
+        } finally {
+          setLoading(false);
+        }
+      };
 
       session.oncancel = () => {
-        console.warn("⚠️ Apple Pay Cancelled by User");
         setError("Payment cancelled.");
         setLoading(false);
       };
 
       session.begin();
     } catch (err) {
-      console.error("❌ Apple Pay Error:", err);
-      setError("Apple Pay failed to start.");
+      console.error("Apple Pay start error", err);
+      setError("Apple Pay failed.");
       setLoading(false);
     }
   };
 
   if (!isSupported) {
-    return (
-      <div style={{ textAlign: "center", padding: "10px", color: "#777" }}>
-        Apple Pay is not available.
-      </div>
-    );
+    return <p className="text-center text-gray-500">Apple Pay not available.</p>;
   }
 
   return (
-    <div className="flex flex-col items-center justify-center w-full mt-6">
+    <div className="flex flex-col items-center mt-6">
       <button
         onClick={startApplePay}
         disabled={loading}
@@ -587,8 +736,7 @@ const ApplePayCheckout = ({
           height: "44px",
           borderRadius: "8px",
         }}
-      ></button>
-
+      />
       {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
     </div>
   );
